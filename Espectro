@@ -1,0 +1,60 @@
+  import processing.sound.*;
+
+class Espectro {
+  FFT fft;
+  AudioIn in;
+  int numeroDeBandas;
+  float[] valores;
+  ArrayList<Banda> bandas;
+  
+  Espectro(int numeroDeBandas, Poem poem) {
+    bandas = new ArrayList();
+    valores = new float[numeroDeBandas];
+    this.numeroDeBandas = numeroDeBandas;
+    
+    //Inicialización de analizador de transformada de fourier
+    fft = new FFT(poem);
+    in = new AudioIn(poem, 0);
+    in.start();
+    fft.input(in);
+    
+    int longitudEspectro = numeroDeBandas + 2;
+    int longitudDeBanda = width / numeroDeBandas;
+    int radioDeBanda = 5;
+    
+    for(int i = 0; i < longitudEspectro; i ++) {
+      Banda banda;
+      boolean esFija = i == 0 || i == (longitudEspectro - 1);
+      banda = new Banda(i * longitudDeBanda, height - radioDeBanda, radioDeBanda, esFija);
+      bandas.add(banda);
+      
+      // Unión de bandas
+      if(i > 0) {
+        Banda previa = bandas.get(i - 1);
+        
+        DistanceJointDef joint = new DistanceJointDef();
+        joint.bodyA = previa.body;
+        joint.bodyB = banda.body;
+        joint.length = box2d.scalarPixelsToWorld(longitudDeBanda);
+        
+        // Definición de elasticidad del joint
+        joint.frequencyHz = 0;
+        joint.dampingRatio = 0;
+        
+        box2d.world.createJoint(joint); 
+      }
+    }
+  }
+  
+  void draw() {
+    fft.analyze(valores);
+    
+    for(int i = 1; i < numeroDeBandas; i++) {
+      Banda banda = bandas.get(i);
+      float frecuencia = valores[i];
+      banda.aplicarFuerza(frecuencia);
+      
+      banda.draw();
+    }
+  }
+}
