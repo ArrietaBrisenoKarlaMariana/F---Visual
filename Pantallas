@@ -51,7 +51,7 @@ class Pantallas {
     text("(Puedes leer el poema para un performance mas artistico)", 250, 250);
     text("- Mira como las letras van tomando lugar en el espacio", 260, 270);
  
-    text("Presiona '2' para continuar.", 380, 400);
+    text("> Presiona '2' para continuar.", 380, 400);
     
     if (keyPressed)
     if(key == '2')
