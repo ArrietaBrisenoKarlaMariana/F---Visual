@@ -1,0 +1,93 @@
+class Letra {
+  public static final int SIZE = 18;
+  
+  float xFinal;
+  float yFinal;
+  float x;
+  float y;
+  float w;
+  float h;
+  char letra;
+  boolean atraer = false;
+  Body body;
+  
+  Letra(float x, float y, float xFinal, float yFinal, char letra) {
+    this.x = x;
+    this.y = y;
+    this.xFinal = xFinal;
+    this.yFinal = yFinal;
+    this.w = SIZE;
+    this.h = SIZE;
+    this.letra = letra;
+    
+    // Poligono
+    PolygonShape shape = new PolygonShape();
+    float box2dw = box2d.scalarPixelsToWorld(w / 2);
+    float box2dh = box2d.scalarPixelsToWorld(h / 2);
+    shape.setAsBox(box2dw, box2dh);
+    
+    // Fixture
+    FixtureDef fd = new FixtureDef();
+    fd.shape = shape;
+    fd.density = 0.65;
+    fd.friction = 0.5;
+    fd.restitution = 0.4;
+    
+    // Body
+    BodyDef bd = new BodyDef();
+    bd.type = BodyType.DYNAMIC;
+    Vec2 position = box2d.coordPixelsToWorld(x, y);
+    bd.position.set(position);
+    
+    body = box2d.createBody(bd);
+    body.createFixture(fd);
+  }
+  
+  void draw() {
+    Vec2 position = box2d.getBodyPixelCoord(body);
+    x = position.x;
+    y = position.y;
+    
+    if(!atraer){
+      atraer = y >= yFinal - 10 && y <= yFinal + 10;
+    }
+    
+    if(atraer) {
+      attract();
+    }
+    
+    if((x >= xFinal - 10 && x <= xFinal + 10) && (y >= yFinal - 10 && y <= yFinal + 10)) {
+      
+      body.setTransform(body.getWorldCenter(), 0);
+    }
+    
+    rectMode(CENTER);
+    pushMatrix();
+    translate(x, y);
+    rotate(body.getAngle());
+    
+    
+    noFill();
+    noStroke();
+    rect(0, 0, w, h);
+    
+    textFont(f);
+    textSize(25);
+    fill(50);
+    text(letra, 0 - (w / 2), 0 + (h / 2));
+    
+    popMatrix(); 
+  }
+  
+  void attract() {
+    Vec2 worldTarget = box2d.coordPixelsToWorld(xFinal, yFinal);   
+    Vec2 bodyVec = body.getWorldCenter();
+    
+    worldTarget.subLocal(bodyVec);
+    worldTarget.normalize();
+    worldTarget.mulLocal((float) 500);
+    body.applyForce(worldTarget, bodyVec);
+  }
+  
+  
+}
