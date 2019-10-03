@@ -1,0 +1,73 @@
+import shiffman.box2d.*;
+import org.jbox2d.common.*;
+import org.jbox2d.dynamics.joints.*;
+import org.jbox2d.collision.shapes.*;
+import org.jbox2d.dynamics.*;
+
+
+Box2DProcessing box2d;
+Pantallas pantalla;
+Limite superior;
+Limite inferior;
+Limite izquierdo;
+Limite derecho;
+
+LectorPoema poema;
+Espectro espectro;
+ArrayList<Letra> letras;
+
+PFont f;
+PImage imagen;
+
+void setup() {
+  size(512, 420);
+  smooth();
+  
+  f = loadFont("BookmanOldStyle-48.vlw");
+  imagen = loadImage("image.jpeg");
+  imagen.resize(512,420);
+  pantalla = new Pantallas();
+  
+  //Inicialización del world
+  box2d = new Box2DProcessing(this);
+  box2d.createWorld();
+  
+  //Inicializar limites
+  superior = new Limite(width / 2, 0, width, 2);
+  inferior = new Limite(width / 2, height - 2, width, 2);
+  izquierdo = new Limite(0, height / 2, 2, height);
+  derecho = new Limite(width - 2, height / 2, 2, height);
+  
+  //Inicializar espectro
+  espectro = new Espectro(56, this);
+  
+  //Inicializar poema
+  LectorPoema lector = new LectorPoema();
+  lector.leerPoema("poem.txt");
+  
+  //Inicializar letras
+  letras = new ArrayList();
+  int fila = 0;
+  for(String linea : lector.lineas) {
+    int columna = 0; 
+    for(int i = 0; i < linea.length(); i++) {
+      char caracter = linea.charAt(i);
+      float x = (Letra.SIZE * columna) + 20;
+      float y = ((Letra.SIZE + 10) * fila) + 20;
+      if(caracter != ' '){
+        Letra letra = new Letra(x, height - 40, x, y, caracter);
+        letras.add(letra);
+      } 
+      columna++;
+    }
+    fila++;
+  }
+}
+
+void draw() {
+  pantalla.statusPantalla();
+  //background(255);
+  box2d.step();
+ 
+ 
+}
