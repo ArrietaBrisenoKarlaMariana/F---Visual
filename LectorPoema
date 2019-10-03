@@ -1,0 +1,36 @@
+import java.util.*;
+
+class LectorPoema {
+  ArrayList<String> lineas;
+  
+  LectorPoema() {
+    lineas = new ArrayList();
+  }
+  
+  void leerPoema(String ruta) {
+    String poema = "";
+    InputStream input = createInput(ruta);
+    
+    try {
+      int data = input.read();
+    
+      while(data != -1) {
+        poema += (char)data;
+        data = input.read();
+      }
+    }
+    catch(Exception e) {
+      e.printStackTrace();
+    }
+    finally {
+      try {
+        input.close();
+      }
+      catch(Exception e) {
+        e.printStackTrace();
+      }
+    }
+    
+    lineas.addAll(Arrays.asList(split(poema, '\n')));
+  }
+}
