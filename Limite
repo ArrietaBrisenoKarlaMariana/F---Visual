@@ -1,0 +1,39 @@
+class Limite {
+  
+  float x;
+  float y;
+  float w;
+  float h;
+  
+  Body body;
+  
+  Limite(float x, float y, float w, float h) {
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+    
+    //Poligono
+    PolygonShape shape = new PolygonShape();
+    float box2dw = box2d.scalarPixelsToWorld(w / 2);
+    float box2dh = box2d.scalarPixelsToWorld(h / 2);
+    shape.setAsBox(box2dw, box2dh);
+    
+    //Body
+    BodyDef bd = new BodyDef();
+    bd.type = BodyType.STATIC;
+    Vec2 position = box2d.coordPixelsToWorld(x, y);
+    bd.position.set(position);
+    body = box2d.createBody(bd);
+    
+    //Fixture
+    body.createFixture(shape, 2);
+  }
+  
+  void draw() {
+    rectMode(CENTER);
+    fill(0);
+    noStroke();
+    rect(x, y, w, h);
+  }
+}
