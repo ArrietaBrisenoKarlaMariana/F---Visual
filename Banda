@@ -1,0 +1,45 @@
+class Banda {
+  
+  Body body;
+  float radius;
+  
+  Banda(float x, float y, float radius, boolean fija){
+    this.radius = radius;
+    
+    //Cuerpo
+    BodyDef bd = new BodyDef();
+    bd.type = fija ? BodyType.STATIC : BodyType.DYNAMIC;
+    Vec2 position = box2d.coordPixelsToWorld(x, y);
+    bd.position.set(position);
+    body = box2d.world.createBody(bd);
+    
+    //Poligono
+    CircleShape shape = new CircleShape();
+    shape.m_radius = box2d.scalarPixelsToWorld(radius);
+    
+    //Fixture
+    FixtureDef fd = new FixtureDef();
+    fd.shape = shape;
+    fd.density = 5;
+    fd.friction = 0.3;
+    fd.restitution = 0.6;
+    
+    body.createFixture(fd);
+  }
+  
+  void draw() {
+    Vec2 pos = box2d.getBodyPixelCoord(body);
+    pushMatrix();
+    noFill();
+    translate(pos.x, pos.y);
+    ellipse(0, 0, radius * 2, radius * 2);
+    popMatrix();
+  }
+  
+  void aplicarFuerza(float frecuencia) {
+    Vec2 fuerza = new Vec2(0, frecuencia * 200 * 500 );
+    Vec2 posicion = box2d.getBodyPixelCoord(body);
+    
+    body.applyForce(fuerza, posicion);
+  }
+}
